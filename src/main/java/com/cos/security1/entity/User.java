@@ -21,5 +21,10 @@ public class User {
     private String password;
     private String email;
     private String role;
+
+    //oauth2 로그인 여부
+    private String provider;
+    private String providerId;
+
     private LocalDateTime createDate;
 }
