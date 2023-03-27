@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Security가 /login 주소 요청이 오면 낚아채서 로그인을 진행시킨다.
  * 로그인 진행 완료가 되면 security session을 만들어준다. (Security ContextHolder)
- * Security ContextHolder에는 오브젝트, Authentication 타입 객체만이 들어갈 수 있다.
+ * Security ContextHolder에는 오브젝트로 Authentication 타입 객체만이 들어갈 수 있다.
  * 그리고 Session을 위해 Authentication 객체 안에 User 정보가 있어야 한다.
  * User 오브젝트 타입 => UserDetails 타입 객체
  *
