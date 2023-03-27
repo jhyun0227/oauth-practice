@@ -1,0 +1,34 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/security?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update #create update none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+
+  #oauth2.0 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 557240846849-u1arqormtdi5smuv8cqk9kc7aphu7bdu.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
