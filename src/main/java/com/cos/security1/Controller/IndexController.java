@@ -1,12 +1,17 @@
 package com.cos.security1.Controller;
 
+import com.cos.security1.config.auth.PrincipalDetails;
 import com.cos.security1.entity.User;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,14 +26,50 @@ public class IndexController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
 
+
+    /**
+     *  Session 안에 Security Session이 존재하고 그 안에 Authentication이 존재하며 그 안에 UserDetails(일반적로그인)와 OAuth2User(소셜로그인) 객체가 존재한다.
+     */
+    @GetMapping("/test/login")
+    @ResponseBody
+    //일반 로그인
+    //두가지중 편한 방법으로.... 같은 데이터임
+    public String testLogin(Authentication authentication, @AuthenticationPrincipal PrincipalDetails principalDetails2) {
+        System.out.println("/test/login ====================");
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        System.out.println("authentication = " + principalDetails.getUser());
+
+        System.out.println("userDetails = " + principalDetails2.getUser());
+        return "세션 정보 확인하기";
+    }
+
+    @GetMapping("/test/oauth/login")
+    @ResponseBody
+    //oauth 로그인
+    //두가지중 편한 방법으로.... 같은 데이터임
+    public String testOAuthLogin(Authentication authentication, @AuthenticationPrincipal OAuth2User oAuth2User2) {
+        System.out.println("/test/login ====================");
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        System.out.println("authentication = " + oAuth2User.getAttributes());
+
+        System.out.println("oAuth2User2 = " + oAuth2User2.getAttributes());
+
+        return "OAuth 세션 정보 확인하기";
+    }
+
+    //이렇게 Authentication에 두 개의 객체가 존재하기 때문에, 로그인 시에 파라미터 주입이 까다롭다.
+    //그렇기 때문에 PrincipalDetails에 두 개의 객체를 상속받아 합쳐준다. 그렇게 되면 파라미터 주입이 간단해진다.
+
     @GetMapping({"", "/"})
     public String index() {
         return "index";
     }
 
+    //일반로그인, OAuth 로그인 둘다 principalDeatails로 받을수 있다.
     @GetMapping("/user")
     @ResponseBody
-    public String user() {
+    public String user(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        System.out.println("principalDetails = " + principalDetails.getUser());
         return "user";
     }
 

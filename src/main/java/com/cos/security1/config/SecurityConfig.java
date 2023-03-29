@@ -19,10 +19,13 @@ public class SecurityConfig {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
 
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+    /**
+     * 순환 참조 난다.
+     */
+//    @Bean
+//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

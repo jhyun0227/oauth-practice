@@ -1,12 +1,15 @@
 package com.cos.security1.config.auth;
 
 import com.cos.security1.entity.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Security가 /login 주소 요청이 오면 낚아채서 로그인을 진행시킨다.
@@ -18,13 +21,22 @@ import java.util.List;
  * Security Session(Security ContextHolder) 안에는 Authentication 객체가 들어가야하고,
  * Authentication 객체안에 들어갈 유저의 정보는 UserDetails(PrincipalDetails) 객체이어야만 한다.
  */
-public class PrincipalDetails implements UserDetails {
+@Data
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     //컴포지션
     private User user;
+    private Map<String, Object> attributes;
 
+    //일반 로그인시에 사용
     public PrincipalDetails(User user) {
         this.user = user;
+    }
+
+    //OAuth 로그인시에 사용
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
     }
 
     /**
@@ -72,5 +84,16 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    //중요하지 않아서 null 처리
+    @Override
+    public String getName() {
+        return null;
     }
 }

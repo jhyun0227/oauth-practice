@@ -24,6 +24,8 @@ public class PrincipalDetailsService implements UserDetailsService {
     /**
      * username 파라미터를 잘 맞춰주어야 한다. 아니면 SecurityConfig에 .usernameParameter()함수를 추가해야한다.
      * Security ContextHolder(Authentication(UserDetails)) => 이렇게 보관된다.
+     *
+     * 함수 종료 시 @AuthenticationPrincipal 어노테이션이 만들어진다.
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
