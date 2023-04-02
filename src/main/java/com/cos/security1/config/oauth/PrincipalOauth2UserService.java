@@ -1,6 +1,9 @@
 package com.cos.security1.config.oauth;
 
 import com.cos.security1.config.auth.PrincipalDetails;
+import com.cos.security1.config.oauth.provider.GoogleUserInfo;
+import com.cos.security1.config.oauth.provider.NaverUserInfo;
+import com.cos.security1.config.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.entity.User;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -36,17 +40,24 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println("getAttributes = " + oAuth2User.getAttributes());
 
         //회원가입을 강제로 진행
-        String provider = userRequest.getClientRegistration().getClientId(); //google
-        String providerId = oAuth2User.getAttribute("sub");
+        OAuth2UserInfo oAuth2UserInfo = null;
+        if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
+            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
+            oAuth2UserInfo = new NaverUserInfo((Map<String, Object>) oAuth2User.getAttributes().get("response"));
+        }
+
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
         String username = provider + "_" + providerId; //google_114610520353030138266
         String password = bCryptPasswordEncoder.encode("겟인데어");
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
 
         Optional<User> findUser = userRepository.findByUsername(username);
 
         if (findUser.isEmpty()) {
-            System.out.println("구글 로그인이 최초입니다.");
+            System.out.println("로그인이 최초입니다.");
             User user = User.builder()
                     .username(username)
                     .password(password)
@@ -60,7 +71,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
             return new PrincipalDetails(user, oAuth2User.getAttributes());
         } else {
-            System.out.println("구글 로그인을 한 적이 있습니다.");
+            System.out.println("로그인을 한 적이 있습니다.");
         }
 
         return null;
